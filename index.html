@@ -482,6 +482,33 @@ treatmentGroup.addEventListener('change', (e) => {
   }
 });
 
+// Compress an image file client-side before upload (resize + re-encode as JPEG).
+// Non-image files (e.g. a PDF panoramic) are returned unchanged.
+function compressImage(file, maxDim = 1600, quality = 0.75) {
+  return new Promise((resolve) => {
+    if (!file.type.startsWith('image/')) { resolve(file); return; }
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
+        else { width = Math.round(width * maxDim / height); height = maxDim; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => {
+        URL.revokeObjectURL(url);
+        if (!blob) { resolve(file); return; }
+        resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+      }, 'image/jpeg', quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
+
 const form = document.getElementById('medForm');
 const submitBtn = document.getElementById('submitBtn');
 
@@ -508,9 +535,24 @@ form.addEventListener('submit', async (e) => {
   }
 
   submitBtn.disabled = true;
+  submitBtn.textContent = 'Compressing photos…';
+
+  const xrayInput = document.getElementById('xrayFile');
+  const photoInput = document.getElementById('photoFiles');
+
+  const compressedXray = xrayInput.files[0] ? await compressImage(xrayInput.files[0]) : null;
+  const compressedPhotos = [];
+  for (const f of Array.from(photoInput.files)) {
+    compressedPhotos.push(await compressImage(f));
+  }
+
   submitBtn.textContent = 'Sending…';
 
   const fd = new FormData(form);
+  fd.delete('xrayFile');
+  fd.delete('photoFiles');
+  if (compressedXray) fd.append('xrayFile', compressedXray, compressedXray.name);
+  compressedPhotos.forEach(f => fd.append('photoFiles', f, f.name));
   fd.append('leadPhone', leadPhone);
 
   // Collect checkbox group (pastTreatments) as comma list
