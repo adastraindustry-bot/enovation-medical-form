@@ -476,12 +476,15 @@
             </div>
           </div>
 
+        <div class="field" id="photoFilesField">
           <label class="upload">
-            <input type="file" id="photoFiles" name="photoFiles" accept="image/*" multiple>
+            <input type="file" id="photoFiles" name="photoFiles" accept="image/*" multiple required>
             <div class="up-title">Tap to upload all 8 photos</div>
             <div class="up-sub">Multiple files allowed &middot; take a moment to match each angle above</div>
           </label>
+          <div class="error">Please upload at least one photo before continuing.</div>
           <div class="file-list" id="photoFileList"></div>
+        </div>
         </div>
       </div>
     </section>
