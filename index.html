@@ -223,6 +223,37 @@
     html{scroll-behavior:auto;}
     *{transition:none !important;}
   }
+
+  /* ---- Step navigation ---- */
+  .progress-wrap{
+    max-width:640px;margin:0 auto;padding:18px 20px 0;
+  }
+  .progress-label{
+    font-size:12px;color:var(--text-soft);text-align:center;margin-bottom:8px;
+    letter-spacing:.04em;
+  }
+  .progress-track{
+    height:4px;background:var(--sage);border-radius:4px;overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;background:var(--gold);border-radius:4px;
+    transition:width .3s ease;width:14.28%;
+  }
+  .step{display:none;}
+  .step.active{display:block;}
+  .step-nav{
+    display:flex;gap:12px;margin-top:26px;
+  }
+  .step-nav button{
+    flex:1;padding:15px;border-radius:12px;border:none;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:15px;
+    cursor:pointer;transition:background .15s, transform .1s;
+  }
+  .step-nav button:active{transform:scale(.99);}
+  .btn-next{background:var(--ink);color:#fff;}
+  .btn-next:hover{background:#164240;}
+  .btn-back{background:var(--sage);color:var(--ink);}
+  .btn-back:hover{background:#D8E0D6;}
 </style>
 </head>
 <body>
@@ -236,8 +267,14 @@
 
   <svg class="smile-divider" viewBox="0 0 200 30" preserveAspectRatio="xMidYMid meet"><path d="M10,6 Q100,34 190,6"/></svg>
 
+<div class="progress-wrap">
+  <div class="progress-label" id="progressLabel">Step 1 of 7</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
   <form id="medForm" novalidate>
 
+    <div class="step active" data-step="1">
     <section>
       <div class="section-head"><span class="num">01</span><h2>About you</h2></div>
       <div class="card">
@@ -258,9 +295,31 @@
         </div>
       </div>
     </section>
+      <div class="step-nav">
+        <button type="button" class="btn-next" data-next="2">Next</button>
+      </div>
+    </div>
 
+    <div class="step" data-step="2">
     <section>
-      <div class="section-head"><span class="num">02</span><h2>Medications &amp; allergies</h2></div>
+      <div class="section-head"><span class="num">02</span><h2>Your treatment</h2></div>
+      <div class="card">
+        <div class="field">
+          <label for="treatment">What treatment are you interested in?</label>
+          <textarea id="treatment" name="treatment" placeholder="Describe what you'd like to change about your smile" required></textarea>
+          <div class="error">Please tell us what treatment you're interested in.</div>
+        </div>
+      </div>
+    </section>
+      <div class="step-nav">
+        <button type="button" class="btn-back" data-back="1">Back</button>
+        <button type="button" class="btn-next" data-next="3">Next</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="3">
+    <section>
+      <div class="section-head"><span class="num">03</span><h2>Medications &amp; allergies</h2></div>
       <div class="card">
         <div class="field">
           <label for="medications">Regular medications <span class="opt">— leave blank if none</span></label>
@@ -280,9 +339,15 @@
         </div>
       </div>
     </section>
+      <div class="step-nav">
+        <button type="button" class="btn-back" data-back="2">Back</button>
+        <button type="button" class="btn-next" data-next="4">Next</button>
+      </div>
+    </div>
 
+    <div class="step" data-step="4">
     <section>
-      <div class="section-head"><span class="num">03</span><h2>Dental history</h2></div>
+      <div class="section-head"><span class="num">04</span><h2>Dental history</h2></div>
       <div class="card">
         <div class="field">
           <label>Have you previously had local anesthesia for a dental treatment?</label>
@@ -304,9 +369,15 @@
         </div>
       </div>
     </section>
+      <div class="step-nav">
+        <button type="button" class="btn-back" data-back="3">Back</button>
+        <button type="button" class="btn-next" data-next="5">Next</button>
+      </div>
+    </div>
 
+    <div class="step" data-step="5">
     <section>
-      <div class="section-head"><span class="num">04</span><h2>A few final medical details</h2></div>
+      <div class="section-head"><span class="num">05</span><h2>A few final medical details</h2></div>
       <div class="section-note">Kept strictly confidential, seen only by the clinical team.</div>
       <div class="card">
         <div class="field">
@@ -352,9 +423,15 @@
         </div>
       </div>
     </section>
+      <div class="step-nav">
+        <button type="button" class="btn-back" data-back="4">Back</button>
+        <button type="button" class="btn-next" data-next="6">Next</button>
+      </div>
+    </div>
 
+    <div class="step" data-step="6">
     <section>
-      <div class="section-head"><span class="num">05</span><h2>Travel &amp; images</h2></div>
+      <div class="section-head"><span class="num">06</span><h2>Travel &amp; images</h2></div>
       <div class="card">
         <div class="field">
           <label for="travelDate">Planned travel date to Turkey <span class="opt">— approximate is fine</span></label>
@@ -408,17 +485,29 @@
         </div>
       </div>
     </section>
+      <div class="step-nav">
+        <button type="button" class="btn-back" data-back="5">Back</button>
+        <button type="button" class="btn-next" data-next="7">Next</button>
+      </div>
+    </div>
 
+    <div class="step" data-step="7">
+    <div class="section-head"><span class="num">07</span><h2>Consent &amp; submit</h2></div>
     <div class="consent" id="consentField">
       <input type="checkbox" id="consent" name="consent" required>
       <p>I consent to sharing this information with E-NOVATION's clinical team in Istanbul for the sole purpose of preparing my treatment assessment. My data is kept confidential and is not shared for any other purpose.</p>
     </div>
     <div class="error" id="consentError" style="margin-top:-6px;">Please confirm the consent checkbox before sending.</div>
 
+    <div class="step-nav" style="margin-top:26px;">
+      <button type="button" class="btn-back" data-back="6">Back</button>
+    </div>
+
     <div class="submit-row">
       <button type="submit" class="submit" id="submitBtn">Send my details</button>
       <p class="privacy-line" id="submitError" style="display:none;color:var(--warn);"></p>
       <p class="privacy-line" id="privacyLine">Your information is reviewed only by the clinical team handling your case.</p>
+    </div>
     </div>
   </form>
 </div>
@@ -435,6 +524,61 @@ const WEBHOOK_URL = "https://hook.us2.make.com/1xenkiwp4pcdl7xb1qbiuj0uku5cpw95"
 // Read leadPhone from URL and store as a hidden value
 const urlParams = new URLSearchParams(window.location.search);
 const leadPhone = urlParams.get('leadPhone') || '';
+
+// ---- Step navigation ----
+const TOTAL_STEPS = 7;
+let currentStep = 1;
+const progressLabel = document.getElementById('progressLabel');
+const progressFill = document.getElementById('progressFill');
+
+function showStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  const target = document.querySelector('.step[data-step="' + n + '"]');
+  if (target) target.classList.add('active');
+  currentStep = n;
+  progressLabel.textContent = 'Step ' + n + ' of ' + TOTAL_STEPS;
+  progressFill.style.width = (n / TOTAL_STEPS * 100) + '%';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function validateStep(stepEl) {
+  let valid = true;
+  stepEl.querySelectorAll('.field input[required], .field textarea[required]').forEach(el => {
+    if (!el.value) {
+      el.closest('.field').classList.add('invalid');
+      valid = false;
+    } else {
+      el.closest('.field').classList.remove('invalid');
+    }
+  });
+  const consent = stepEl.querySelector('#consent');
+  if (consent) {
+    if (!consent.checked) {
+      document.getElementById('consentError').style.display = 'block';
+      valid = false;
+    } else {
+      document.getElementById('consentError').style.display = 'none';
+    }
+  }
+  return valid;
+}
+
+document.querySelectorAll('[data-next]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const currentStepEl = document.querySelector('.step.active');
+    if (!validateStep(currentStepEl)) {
+      currentStepEl.querySelector('.invalid, #consentError[style*="block"]')?.scrollIntoView({behavior: 'smooth', block: 'center'});
+      return;
+    }
+    showStep(parseInt(btn.dataset.next));
+  });
+});
+
+document.querySelectorAll('[data-back]').forEach(btn => {
+  btn.addEventListener('click', () => showStep(parseInt(btn.dataset.back)));
+});
+
+
 
 // Toggle style on radio/choice selection — bound to the input's change event
 // (not just click) so keyboard navigation (Tab + Space/Arrow keys) also updates the visible state
