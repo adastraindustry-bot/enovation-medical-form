@@ -306,8 +306,15 @@
       <div class="card">
         <div class="field">
           <label for="treatment">What treatment are you interested in?</label>
-          <textarea id="treatment" name="treatment" placeholder="Describe what you'd like to change about your smile" required></textarea>
+          <select id="treatment" name="treatment" required>
+            <option value="">Select one</option>
+            <option value="Hollywood Smile / Veneers">Hollywood Smile / Veneers</option>
+            <option value="Dental implants">Dental implants</option>
+            <option value="Full smile makeover">Full smile makeover</option>
+            <option value="Other">Other</option>
+          </select>
           <div class="error">Please tell us what treatment you're interested in.</div>
+          <textarea id="treatmentOther" name="treatmentOther" placeholder="Please specify" style="margin-top:10px;display:none;"></textarea>
         </div>
       </div>
     </section>
@@ -614,6 +621,11 @@ function bindFileList(inputId, listId){
     });
   });
 }
+// Show/hide "Other" treatment detail field
+document.getElementById('treatment').addEventListener('change', (e) => {
+  document.getElementById('treatmentOther').style.display = e.target.value === 'Other' ? 'block' : 'none';
+});
+
 bindFileList('xrayFile','xrayFileList');
 bindFileList('photoFiles','photoFileList');
 
@@ -705,6 +717,12 @@ form.addEventListener('submit', async (e) => {
   // Collect checkbox group (pastTreatments) as comma list
   const treatments = Array.from(document.querySelectorAll('input[name="pastTreatments"]:checked')).map(c => c.value);
   fd.set('pastTreatments', treatments.join(', '));
+
+  // If "Other" was selected for treatment, send the specified detail instead
+  if (document.getElementById('treatment').value === 'Other') {
+    const otherDetail = document.getElementById('treatmentOther').value;
+    fd.set('treatment', otherDetail ? 'Other: ' + otherDetail : 'Other');
+  }
 
   try{
     await fetch(WEBHOOK_URL, { method: 'POST', body: fd, mode: 'no-cors' });
